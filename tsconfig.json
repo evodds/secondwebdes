@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es2019",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@pkg/ui": ["packages/ui/src"],
+      "@pkg/ui/*": ["packages/ui/src/*"],
+      "@content/*": ["content/*"]
+    }
+  },
+  "include": ["apps", "packages", "content", "design", "next-env.d.ts"],
+  "exclude": ["node_modules"]
+}
