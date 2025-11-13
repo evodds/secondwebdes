@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import promo from "../../../content/promo.json";
 import {
   Button,
@@ -9,6 +10,8 @@ import {
   type ProductCardProps
 } from "@pkg/ui";
 import { PromoBanner } from "../components/promo-banner";
+
+const Countdown = dynamic(() => import("../components/Countdown"), { ssr: false });
 
 const categories = [
   "Lighting",
@@ -103,7 +106,14 @@ const testimonials = [
 export default function HomePage() {
   return (
     <div className="flex flex-col">
-      <PromoBanner promo={promo} />
+      <PromoBanner
+        promo={promo}
+        countdown={
+          <span className="font-mono tracking-tight">
+            <Countdown target="2025-03-01T00:00:00Z" suffix="" />
+          </span>
+        }
+      />
       <section className="section-padding mx-auto flex w-full max-w-6xl flex-col gap-2xl">
         <div className="grid gap-2xl lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:items-center">
           <div className="flex flex-col gap-lg">
