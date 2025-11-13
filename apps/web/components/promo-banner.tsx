@@ -2,40 +2,33 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Button } from "@pkg/ui";
 
-interface PromoContent {
+type PromoContent = {
   message: string;
   expiresAt: string;
-  cta: {
-    label: string;
-    href: string;
-  };
-}
+  cta: { label: string; href: string };
+};
 
-interface PromoBannerProps {
+type PromoBannerProps = {
   promo: PromoContent;
-  countdown?: ReactNode;
-}
+  countdown?: ReactNode; // slot for a live timer
+};
 
 export function PromoBanner({ promo, countdown }: PromoBannerProps) {
-
   return (
     <section
       aria-label="Limited time promotion"
-      className="bg-accent-primary text-accent-primary-foreground"
+      className="w-full border-b border-neutral-200 bg-neutral-50"
     >
-      <div className="mx-auto flex max-w-6xl flex-col gap-sm px-xl py-sm text-sm md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-col gap-xs md:flex-row md:items-center md:gap-sm">
-          <span className="font-semibold uppercase tracking-wide">Just dropped</span>
-          <p className="text-base md:text-body">{promo.message}</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-sm">
-          <time
-            aria-live="polite"
-            className="flex items-center gap-xs rounded-pill bg-accent-primary-foreground/10 px-sm py-xs text-xs font-semibold uppercase tracking-wider"
-          >
-            {countdown ?? <span className="font-mono tracking-tight">0d 0h 0m 0s</span>}
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2 text-sm">
+        <p className="truncate">
+          <span className="font-semibold">JUST DROPPED</span>{" "}
+          {promo.message}
+        </p>
+        <div className="flex items-center gap-3">
+          <time aria-live="polite" className="font-mono tracking-tight">
+            {countdown ?? <span className="opacity-70">0d 0h 0m 0s</span>}
           </time>
-          <Button asChild size="md" variant="ghost" className="bg-accent-primary-foreground text-accent-primary">
+          <Button asChild size="sm" variant="ghost">
             <Link href={promo.cta.href}>{promo.cta.label}</Link>
           </Button>
         </div>

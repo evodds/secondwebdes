@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 
 type Props = {
@@ -10,7 +9,7 @@ type Props = {
 };
 
 export default function Countdown({ target, suffix = '' }: Props) {
-  // render nothing on the server to prevent hydration mismatch
+  // prevent SSR/CSR mismatch: render placeholder on the server
   const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
@@ -20,7 +19,6 @@ export default function Countdown({ target, suffix = '' }: Props) {
   }, []);
 
   if (now === null) {
-    // first client paint only; suppress SSR mismatch warning
     return <span suppressHydrationWarning>—d —h —m —s{suffix}</span>;
   }
 

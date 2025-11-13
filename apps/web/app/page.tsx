@@ -110,7 +110,7 @@ export default function HomePage() {
         promo={promo}
         countdown={
           <span className="font-mono tracking-tight">
-            <Countdown target="2025-03-01T00:00:00Z" suffix="" />
+            <Countdown target="2025-03-01T00:00:00Z" />
           </span>
         }
       />
