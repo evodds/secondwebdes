@@ -1,0 +1,8 @@
+{
+  "message": "Limited-time launch: 20% off our studio essentials",
+  "expiresAt": "2025-12-31T23:59:59.000Z",
+  "cta": {
+    "label": "Explore collection",
+    "href": "/catalog"
+  }
+}

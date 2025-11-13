@@ -1,0 +1,11 @@
+# builds / caches
+dist
+build
+.turbo
+.next
+out
+*.tsbuildinfo
+# node
+node_modules
+# misc
+.DS_Store
