@@ -1,4 +1,11 @@
-node_modules/
-npm-debug.log
-.env
+# builds / caches
+dist
+build
+.turbo
+.next
+out
+*.tsbuildinfo
+# node
+node_modules
+# misc
 .DS_Store
