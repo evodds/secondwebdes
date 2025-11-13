@@ -1,0 +1,96 @@
+set -euo pipefail
+
+# 0) Branch for this integration work
+git fetch origin
+if git rev-parse --verify -q replit/next-runner >/dev/null; then
+  git switch replit/next-runner
+else
+  git switch -c replit/next-runner
+fi
+
+# 1) Nix: pin a known-good channel + Node 20 + npm + git + certs
+cat > replit.nix <<'NIX'
+{ pkgs }:
+{
+  channel = "stable-23_11";
+  deps = [
+    pkgs.nodejs-20_x
+    pkgs.nodePackages.npm
+    pkgs.git
+    pkgs.cacert
+  ];
+}
+NIX
+
+# 2) Replit runner: use npm workspaces and run Next dev in apps/web
+cat > .replit <<'TOML'
+entrypoint = "apps/web/app/page.tsx"
+
+[nix]
+channel = "stable-23_11"
+
+[env]
+NODE_ENV = "development"
+PORT = "3000"
+NEXT_TELEMETRY_DISABLED = "1"
+
+[packager]
+manager = "npm"
+language = "nodejs"
+
+[run]
+build = "npm install --workspaces"
+start = "npm run dev -w apps/web"
+
+[deployment]
+deploymentTarget = "auto"
+run = ["npm","run","start","-w","apps/web"]
+TOML
+
+# 3) Root package.json: ensure workspaces + scripts forward to apps/web
+node - <<'NODE'
+const fs = require('fs');
+const path = 'package.json';
+const pkg = JSON.parse(fs.readFileSync(path, 'utf8'));
+pkg.private = true;
+pkg.workspaces = pkg.workspaces || ["apps/web","packages/ui"];
+pkg.scripts = Object.assign({}, pkg.scripts, {
+  "dev":   "npm run dev -w apps/web",
+  "build": "npm run build -w apps/web",
+  "start": "npm run start -w apps/web"
+});
+fs.writeFileSync(path, JSON.stringify(pkg, null, 2));
+console.log('Patched root package.json (workspaces + scripts).');
+NODE
+
+# 4) apps/web scripts: dev uses Replit $PORT
+node - <<'NODE'
+const fs = require('fs');
+const p = 'apps/web/package.json';
+if (!fs.existsSync(p)) { console.log('WARNING: apps/web/package.json not found'); process.exit(0); }
+const pkg = JSON.parse(fs.readFileSync(p, 'utf8'));
+pkg.scripts = Object.assign({}, pkg.scripts, {
+  "dev":   "next dev -p $PORT",
+  "build": "next build",
+  "start": "next start -p $PORT"
+});
+fs.writeFileSync(p, JSON.stringify(pkg, null, 2));
+console.log('Patched apps/web/package.json (Next scripts).');
+NODE
+
+# 5) Install deps across the workspace
+npm install --workspaces
+
+# 6) Commit and push a PR branch
+git add -A
+git commit -m "Replit: Next.js runner (apps/web) + Nix pin + workspace scripts"
+git push -u origin replit/next-runner
+
+echo
+echo "✅ Pushed branch 'replit/next-runner'. Open the PR on GitHub:"
+echo "   https://github.com/evodds/secondwebdes/compare/replit/next-runner?expand=1"
+echo
+echo "➡ After merging the PR, run:"
+echo "   git fetch origin && git switch main && git pull --ff-only"
+echo
+echo "Then just click RUN in Replit (it will run Next dev in apps/web)."
