@@ -1,3 +1,5 @@
+@reference "tailwindcss";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -52,6 +54,6 @@
 
 @layer utilities {
   .section-padding {
-    @apply px-xl py-2xl lg:px-[clamp(theme(spacing.2xl),5vw,6rem)] lg:py-[clamp(theme(spacing.2xl),5vw,6rem)];
+    @apply px-8 py-16 lg:px-[clamp(3rem,5vw,6rem)] lg:py-[clamp(3rem,5vw,6rem)];
   }
 }

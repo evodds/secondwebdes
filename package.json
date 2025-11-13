@@ -1,31 +1,28 @@
 {
   "name": "secondwebdes",
-<<<<<<< HEAD
   "version": "1.0.0",
-  "description": "Second Web Design - A modern web starter template",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "keywords": ["web", "design", "template"],
-  "author": "",
-  "license": "ISC"
-=======
   "private": true,
-  "version": "0.1.0",
+  "workspaces": [
+    "apps/web",
+    "packages/ui"
+  ],
   "scripts": {
-    "dev": "npm run dev --prefix apps/web",
-    "build": "npm run build --prefix apps/web",
-    "lint": "npm run lint --prefix apps/web"
+    "dev": "npm run dev -w apps/web",
+    "build": "npm run build -w apps/web",
+    "start": "npm run start -w apps/web"
   },
+  "description": "Second Web Design - A modern Next.js monorepo",
+  "keywords": [
+    "nextjs",
+    "monorepo",
+    "web"
+  ],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
-  },
-  "devDependencies": {
-    "@types/react": "^18.2.45",
-    "@types/react-dom": "^18.2.18",
-    "typescript": "5.4.5"
+    "@tailwindcss/postcss": "^4.1.17",
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.17"
   }
->>>>>>> origin/main
 }
