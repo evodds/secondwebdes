@@ -40,3 +40,6 @@ externalPort = 3000
 [deployment]
 deploymentTarget = "autoscale"
 run = ["node", "server.js"]
+
+entrypoint = "apps/web/package.json"
+run = "npm run dev --workspace apps/web"
