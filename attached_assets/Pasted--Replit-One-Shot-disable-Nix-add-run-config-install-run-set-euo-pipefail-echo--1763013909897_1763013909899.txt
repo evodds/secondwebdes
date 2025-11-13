@@ -1,0 +1,85 @@
+# ===== Replit One-Shot: disable Nix, add run config, install, run =====
+set -euo pipefail
+
+echo "▶ Repo check…"
+ROOT="$(pwd)"
+test -f package.json || { echo "This folder has no package.json"; exit 1; }
+if [ -d apps/web ] && [ -f apps/web/package.json ]; then
+  echo "  ✓ Detected monorepo: apps/web + (optional) packages/ui"
+else
+  echo "  ✗ Expected apps/web/ with package.json; please confirm your repo structure."; exit 1
+fi
+
+echo "▶ Stop Nix & any stale autoconfig…"
+# If a Nix file exists, Replit will try to build it and show the orange banner.
+git rm -f replit.nix 2>/dev/null || true
+rm -f replit.nix 2>/dev/null || true
+
+# Remove leftover “static starter” files (safe to keep if you want; they’re unused by Next)
+rm -f index.html script.js style.css server.js 2>/dev/null || true
+
+echo "▶ Write a clean .replit run config for Next.js (monorepo)…"
+cat > .replit <<'TOML'
+# Minimal, battle-tested config that works without Nix.
+# Click the green Run button or use `npm run dev -w apps/web`.
+run = "bash -lc 'npm install && npm run dev -w apps/web -- --port ${PORT:-3000} --hostname 0.0.0.0'"
+
+[env]
+PORT = "3000"
+NODE_OPTIONS = "--max_old_space_size=4096"
+# Secrets you already added (FIGMA_TOKEN/FIGMA_FILE_KEY) are injected by Replit automatically.
+
+[interpreter]
+command = [ "bash", "-lc" ]
+TOML
+
+echo "▶ Ensure Node & npm are present…"
+node -v || { echo "Node is missing in this Repl"; exit 1; }
+npm -v || { echo "npm is missing in this Repl"; exit 1; }
+
+echo "▶ Install workspace dependencies (root + workspaces)…"
+# Prefer clean, fast installs when lockfiles exist:
+if [ -f package-lock.json ]; then
+  npm ci || npm install
+else
+  npm install
+fi
+
+# If you have a local UI package, build it (no-op if script not present)
+echo "▶ Build local UI package if present…"
+npm run build -w packages/ui 2>/dev/null || true
+
+# Make sure Next has a default dev script target
+if ! jq -e '.scripts.dev' apps/web/package.json >/dev/null 2>&1; then
+  echo "  • Adding dev script to apps/web/package.json"
+  tmpfile="$(mktemp)"
+  node - <<'JS' > "$tmpfile"
+const fs = require('fs');
+const p = 'apps/web/package.json';
+const data = JSON.parse(fs.readFileSync(p,'utf8'));
+data.scripts ||= {};
+data.scripts.dev ||= "next dev";
+fs.writeFileSync(p, JSON.stringify(data,null,2));
+JS
+  mv "$tmpfile" apps/web/package.json
+fi
+
+echo "▶ (Optional) Commit a small 'Replit run config' branch you can PR…"
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD || echo main)"
+NEW_BRANCH="replit/run-config"
+# Only branch if we’re on main and there are changes
+if [ "$(git status --porcelain | wc -l)" -gt 0 ]; then
+  if [ "$CURRENT_BRANCH" = "main" ]; then
+    git switch -c "$NEW_BRANCH" || git checkout -b "$NEW_BRANCH"
+  fi
+  git add -A
+  git commit -m "Replit: disable Nix, add .replit run command, tidy starters"
+  git push -u origin "$(git rev-parse --abbrev-ref HEAD)" || true
+  echo "  ✓ Pushed branch: $(git rev-parse --abbrev-ref HEAD). Open a PR on GitHub if you want."
+else
+  echo "  • No local changes to commit."
+fi
+
+echo "▶ Start the dev server now (same command the Run button will use)…"
+npm run dev -w apps/web -- --port "${PORT:-3000}" --hostname 0.0.0.0
+# When you see “ready”/compiled in the console, open Preview → Open in new tab.
