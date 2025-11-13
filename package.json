@@ -12,7 +12,17 @@
     "start": "npm run start -w apps/web"
   },
   "description": "Second Web Design - A modern Next.js monorepo",
-  "keywords": ["nextjs", "monorepo", "web"],
+  "keywords": [
+    "nextjs",
+    "monorepo",
+    "web"
+  ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.1.17",
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.17"
+  }
 }
