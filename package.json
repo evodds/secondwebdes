@@ -1,0 +1,12 @@
+{
+  "name": "secondwebdes",
+  "version": "1.0.0",
+  "description": "Second Web Design - A modern web starter template",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["web", "design", "template"],
+  "author": "",
+  "license": "ISC"
+}

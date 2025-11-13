@@ -2,8 +2,9 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 5000;
+const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
+const PUBLIC_DIR = path.join(__dirname, 'public');
 
 const mimeTypes = {
     '.html': 'text/html',
@@ -22,10 +23,7 @@ const server = http.createServer((req, res) => {
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
 
-    let filePath = '.' + req.url;
-    if (filePath === './') {
-        filePath = './index.html';
-    }
+    let filePath = path.join(PUBLIC_DIR, req.url === '/' ? 'index.html' : req.url);
 
     const extname = String(path.extname(filePath)).toLowerCase();
     const contentType = mimeTypes[extname] || 'application/octet-stream';
