@@ -14,6 +14,7 @@ export default function DesignPage() {
         <h1 className="text-2xl font-semibold">Design preview</h1>
         <Link className="underline" href="/">Back to site</Link>
       </div>
+
       {nodes.length === 0 ? (
         <p className="opacity-70">No frames found. Run the Figma pull script.</p>
       ) : (
@@ -22,10 +23,16 @@ export default function DesignPage() {
             <li key={n.id} className="rounded-xl border bg-white/50 p-3 shadow-sm">
               <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-neutral-100">
                 {n.thumb ? (
-                  /* Using next/image with remote URL is fine in dev; if needed, adjust next.config for remotePatterns later */
-                  <Image src={n.thumb} alt={n.name} fill sizes="(min-width: 1024px) 33vw, 100vw" />
+                  <Image
+                    src={n.thumb}
+                    alt={n.name}
+                    fill
+                    sizes="(min-width: 1024px) 33vw, 100vw"
+                  />
                 ) : (
-                  <div className="grid h-full w-full place-items-center text-sm opacity-60">No preview</div>
+                  <div className="grid h-full w-full place-items-center text-sm opacity-60">
+                    No preview
+                  </div>
                 )}
               </div>
               <p className="mt-3 truncate text-sm font-medium">{n.name}</p>

@@ -12,19 +12,17 @@ if (!token || !fileKey) {
 const headers = { "X-Figma-Token": token };
 
 async function main() {
-  // Get file structure
   const fileRes = await fetch(`https://api.figma.com/v1/files/${fileKey}`, { headers });
   if (!fileRes.ok) throw new Error(`File fetch failed: ${fileRes.status}`);
   const fileJson: any = await fileRes.json();
 
-  // Collect top-level frames (first page only to keep it small)
   const page = fileJson.document?.children?.[0];
-  const frames = Array.isArray(page?.children)
-    ? page.children.filter((n: any) => n.type === "FRAME").slice(0, 24)
-    : [];
+  const frames =
+    Array.isArray(page?.children)
+      ? page.children.filter((n: any) => n.type === "FRAME").slice(0, 24)
+      : [];
 
   const ids = frames.map((f: any) => f.id).join(",");
-  // Ask Figma for PNG thumbnails
   const imgRes = await fetch(
     `https://api.figma.com/v1/images/${fileKey}?ids=${encodeURIComponent(ids)}&format=png&scale=2`,
     { headers }
